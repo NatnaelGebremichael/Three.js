@@ -31,6 +31,8 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(sizes.width, sizes.height);
 
+gsap.to(mesh.position, { duration: 1, delay: 1, x: 2 }); //animating mesh Pos not mesh
+gsap.to(mesh.position, { duration: 1, delay: 2, x: 0 }); //animating mesh Pos not mesh
 const clock = new THREE.Clock();
 
 //Animation Function using Fat arrow instead of function xxx
