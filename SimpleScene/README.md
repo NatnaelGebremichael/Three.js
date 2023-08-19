@@ -11,4 +11,4 @@
   - open the build folder insde the extracted threejs-master
   - copy three.min.js
   - Add it to SimpleScene dir
--
+- open the index.html file in your web browser
