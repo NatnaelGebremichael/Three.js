@@ -10,18 +10,29 @@ const scene = new THREE.Scene();
 /**
  * Objects
  */
-const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-const mesh = new THREE.Mesh(geometry, material);
+const group = new THREE.Group();
+group.position.y = 1;
+scene.add(group);
 
-//Rotate Object
-mesh.rotation.reorder("YX");
-mesh.rotation.y = Math.PI * 0.25;
-mesh.rotation.x = Math.PI * 0.25;
-mesh.position.set(0.7, -0.6, 1); //cahnge pos
-mesh.scale.set(2, 0.5, 0.5); //change scale
-//mesh.position.normalize(); //take vector length and reduce it to 1
-scene.add(mesh);
+const cube1 = new THREE.Mesh(
+  new THREE.BoxGeometry(1, 1, 1),
+  new THREE.MeshBasicMaterial({ color: 0xff0000 })
+);
+group.add(cube1);
+
+const cube2 = new THREE.Mesh(
+  new THREE.BoxGeometry(1, 1, 1),
+  new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+);
+cube2.position.x = -1.5;
+group.add(cube2);
+
+const cube3 = new THREE.Mesh(
+  new THREE.BoxGeometry(1, 1, 1),
+  new THREE.MeshBasicMaterial({ color: 0x0000ff })
+);
+cube3.position.x = 1.5;
+group.add(cube3);
 
 //Axes Helper
 const axeshelper = new THREE.AxesHelper(3);
@@ -43,10 +54,12 @@ camera.position.z = 3;
 //camera.position.x = 1;
 //camera.position.y = 1;
 scene.add(camera);
-camera.lookAt(mesh.position); //looks at the center of object
+camera.lookAt(cube1.position); //looks at the center of object
 
 //Distance to camera from mesh
-console.log("Distance to camera: " + mesh.position.distanceTo(camera.position));
+console.log(
+  "Distance to camera: " + cube1.position.distanceTo(camera.position)
+);
 
 /**
  * Renderer
