@@ -22,10 +22,13 @@ const mesh = new THREE.Mesh(
 );
 scene.add(mesh);
 
-// Camera, 75 is value for vertical view
-const camera = new THREE.PerspectiveCamera(
-  75,
-  sizes.width / sizes.height,
+// aspectRatio is for left and right
+const aspectRatio = sizes.width / sizes.height;
+const camera = new THREE.OrthographicCamera(
+  -1 * aspectRatio,
+  1 * aspectRatio,
+  1,
+  -1,
   0.1,
   100
 );
