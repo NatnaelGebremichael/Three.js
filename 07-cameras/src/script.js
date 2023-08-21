@@ -1,6 +1,18 @@
 import * as THREE from "three";
 
 /**
+ * Cursor
+ */
+const cursor = {
+  x: 0,
+  y: 0,
+};
+window.addEventListener("mousemove", (mouseEvent) => {
+  cursor.x = mouseEvent.clientX / sizes.width - 0.5;
+  cursor.y = -(mouseEvent.clientY / sizes.height - 0.5);
+});
+
+/**
  * Base
  */
 // Canvas
@@ -22,20 +34,17 @@ const mesh = new THREE.Mesh(
 );
 scene.add(mesh);
 
-// aspectRatio is for left and right
-const aspectRatio = sizes.width / sizes.height;
-const camera = new THREE.OrthographicCamera(
-  -1 * aspectRatio,
-  1 * aspectRatio,
-  1,
-  -1,
+// Camera, 75 is value for vertical view
+const camera = new THREE.PerspectiveCamera(
+  75,
+  sizes.width / sizes.height,
   0.1,
   100
 );
-camera.position.x = 2;
-camera.position.y = 2;
-camera.position.z = 2;
-console.log(camera.position.length());
+//camera.position.x = 2;
+//camera.position.y = 2;
+camera.position.z = 3;
+//console.log(camera.position.length());
 camera.lookAt(mesh.position);
 scene.add(camera);
 
@@ -53,6 +62,12 @@ const tick = () => {
 
   // Update objects
   mesh.rotation.y = elapsedTime;
+
+  //camera
+  camera.position.x = Math.sin(cursor.x * Math.PI * 2) * 3; //math.pi is half rotation, half circle etc
+  camera.position.z = Math.cos(cursor.x * Math.PI * 2) * 3;
+  camera.position.y = cursor.y * 5;
+  camera.lookAt(mesh.position);
 
   // Render
   renderer.render(scene, camera);
