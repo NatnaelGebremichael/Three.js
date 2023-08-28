@@ -37,9 +37,18 @@ window.addEventListener("resize", () => {
 
   //update Rendere - this will also update canvas
   renderer.setSize(sizes.width, sizes.height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
 
-console.log(window.devicePixelRatio);
+window.addEventListener("dblclick", () => {
+  if (!document.fullscreenElement) {
+    canvas.requestFullscreen();
+    console.log("Enter Full Screen");
+  } else {
+    document.exitFullscreen();
+    console.log("Leave Full Screen");
+  }
+});
 /**
  * Camera
  */
@@ -64,6 +73,8 @@ const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
 });
 renderer.setSize(sizes.width, sizes.height);
+
+//Using Math.min to limit the pixel ration to upper limt of 2
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 /**
