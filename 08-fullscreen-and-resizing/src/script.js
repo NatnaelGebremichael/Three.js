@@ -38,6 +38,8 @@ window.addEventListener("resize", () => {
   //update Rendere - this will also update canvas
   renderer.setSize(sizes.width, sizes.height);
 });
+
+console.log(window.devicePixelRatio);
 /**
  * Camera
  */
@@ -62,6 +64,7 @@ const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
 });
 renderer.setSize(sizes.width, sizes.height);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 /**
  * Animate
