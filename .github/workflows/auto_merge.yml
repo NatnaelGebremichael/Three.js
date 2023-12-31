@@ -4,17 +4,17 @@ on:
   push:
     branches-ignore:
       - main
-      - master
 
 jobs:
   createPullRequest:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Create Pull Request
-      uses: repo-sync/pull-request@v2
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        pr_title: "Automated Pull Request for New Branch"
-        pr_body: "A new branch has been pushed and this pull request has been created automatically."
-        pr_branch: ${{ github.ref }}
+      - uses: actions/checkout@v2
+      - name: Create Pull Request
+        uses: repo-sync/pull-request@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_title: "Automated Pull Request for New Branch"
+          pr_body: "A new branch has been pushed and this pull request has been created automatically."
+          source_branch: ${{ github.ref_name }} # Adjusted input
+          destination_branch: "main" # Adjusted input
