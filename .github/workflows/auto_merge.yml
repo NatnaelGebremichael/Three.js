@@ -1,4 +1,4 @@
-name: Auto Create Pull Request
+name: Create and Merge Pull Request and Delete Branch
 
 on:
   push:
@@ -7,14 +7,39 @@ on:
 
 jobs:
   createPullRequest:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Create Pull Request
         uses: repo-sync/pull-request@v2
         with:
-          token: ${{ secrets.THREE_JS_GITHUB_ACTION_PULL }} # Use the PAT instead of GITHUB_TOKEN
+          github_token: ${{ secrets.THREE_JS_GITHUB_ACTION_PULL }} # Use the PAT instead of GITHUB_TOKEN
           pr_title: "Automated Pull Request for New Branch"
           pr_body: "A new branch has been pushed and this pull request has been created automatically."
           source_branch: ${{ github.ref_name }} # Adjusted input
           destination_branch: "main" # Adjusted input
+
+  autoMerge:
+    if: github.event_name == 'pull_request' && github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.action == 'reopened'
+    needs: createPullRequest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Auto Merge
+        uses: pascalgn/automerge-action@v0.13.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.THREE_JS_GITHUB_ACTION_PULL }}
+        with:
+          mergeMethod: squash
+          commitMessage: "Merge pull request #${{ github.event.pull_request.number }}"
+          #pullRequestLabels: "automerge"
+
+  deleteBranch:
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
+    needs: autoMerge
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete Branch
+        run: git push origin --delete ${{ github.head_ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.THREE_JS_GITHUB_ACTION_PULL }}
