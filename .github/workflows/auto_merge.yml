@@ -13,7 +13,7 @@ jobs:
       - name: Create Pull Request
         uses: repo-sync/pull-request@v2
         with:
-          token: ${{ secrets.THREE_JS_GITHUB_ACTION_PULL }} # Use the PAT instead of GITHUB_TOKEN
+          github_token: ${{ secrets.THREE_JS_GITHUB_ACTION_PULL }} # Use the PAT instead of GITHUB_TOKEN
           pr_title: "Automated Pull Request for New Branch"
           pr_body: "A new branch has been pushed and this pull request has been created automatically."
           source_branch: ${{ github.ref_name }} # Adjusted input
