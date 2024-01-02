@@ -28,21 +28,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.Act_Local_GitWorkFlowTesting }}
 
-      #- name: Create Pull Request Updated
-      #  uses: peter-evans/create-pull-request@v5
-      #  with:
-      #    token: ${{ secrets.Act_Local_GitWorkFlowTesting }#} # Your PAT or you can use GITHUB_TOKEN
-      #    title: ${{ steps.last_commit.outputs.commit_name }#}
-      #    body: "A new branch has been pushed and this pull request has been created automatically."
-      #    branch: "Dev" #${{ github.head_ref }#} # The branch to create for the pull request
-      #    base: "main" # The branch you want to merge your changes into
-      #    labels: "Automated PR" # You can add more labels separated by commas
-      #    # reviewers: "user1, user2" # Optional: Add if you want to specify reviewers
-      #    # team_reviewers: "team1, team2" # Optional: Add if you want to specify team reviewers
-      #    draft: false
-
   autoMerge:
-    if: github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.action == 'reopened')
+    if: github.event_name == 'pull_request' && github.event.action == 'opened'
     needs: createPullRequest
     runs-on: ubuntu-latest
     steps:
@@ -50,20 +37,21 @@ jobs:
         uses: actions/setup-node@v3
 
       - name: Auto Merge
-        uses: pascalgn/automerge-action@v0.13.1
+        run: |
+          gh auth setup-git
+          PR_NUMBER=$(gh pr view --json number --jq '.number')
+          COMMIT_TITLE="Merge pull request #$PR_NUMBER"
+          COMMIT_BODY="Detailed description of the merge"
+          gh pr merge $PR_NUMBER --auto --squash -t "$COMMIT_TITLE" -b "$COMMIT_BODY"
         env:
-          GITHUB_TOKEN: ${{ secrets.Act_Local_GitWorkFlowTesting }}
-        with:
-          mergeMethod: squash
-          commitMessage: "Merge pull request #${{ github.event.pull_request.number }}"
-          #pullRequestLabels: "automerge"
+          GH_TOKEN: ${{ secrets.Act_Local_GitWorkFlowTesting }}
 
-  deleteBranch:
-    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
-    needs: autoMerge
-    runs-on: ubuntu-latest
-    steps:
-      - name: Delete Branch
-        run: git push origin --delete ${{ github.head_ref }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.THREE_JS_GITHUB_ACTION_PULL }}
+  #deleteBranch:
+  # if:# github.event_name == 'pull_request' && github.event.pull_request.merged == true
+  #needs: autoMerge
+  #runs-on: ubuntu-latest
+  #steps:
+  #  - name: Delete Branch
+  #    run: git push origin --delete ${{ github.head_ref }#}
+  #    env:
+  #      GITHUB_TOKEN: ${{ secrets.THREE_JS_GITHUB_ACTION_PULL }#}
