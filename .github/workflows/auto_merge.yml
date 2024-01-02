@@ -1,18 +1,42 @@
-name: Auto Merge
+name: Create PR
 
 on:
-  pull_request:
+  push:
     branches-ignore:
       - main
 
 jobs:
-  autoMerge:
+  createPullRequest:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Set up Node.js
         uses: actions/setup-node@v3
 
-      - name: Auto Merge
-        run: echo "event name is:" ${{ github.event_action }}
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      # Extract the name of the last commit in the branch
+      - name: Get Last Commit Name
+        id: last_commit
+        run: |
+          COMMIT_NAME=$(git log -1 --pretty=%B)
+          echo "commit_name=$COMMIT_NAME" >> $GITHUB_ENV
+
+      - name: create pull request
+        run: gh pr create -B main -H dev --title 'Merge branch_to_merge into base_branch' --body 'Created by Github action'
         env:
           GH_TOKEN: ${{ secrets.Act_Local_GitWorkFlowTesting }}
+
+  autoMerge:
+    needs: createPullRequest
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+
+    - name: Auto Merge
+      run: echo "event name is:" ${{ github.event_name }}
+      env:
+        GH_TOKEN: ${{ secrets.Act_Local_GitWorkFlowTesting }}
+    
