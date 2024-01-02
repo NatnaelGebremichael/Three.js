@@ -8,15 +8,12 @@ on:
 jobs:
   autoMerge:
     if: github.event_name == 'pull_request' && github.event.action == 'opened'
-    needs: createPullRequest
     runs-on: ubuntu-latest
     steps:
       - name: Set up Node.js
         uses: actions/setup-node@v3
 
       - name: Auto Merge
-        run: echo "event name is:" ${{ github.event_name }} 
+        run: echo "event name is:" ${{ github.event_name }}
         env:
           GH_TOKEN: ${{ secrets.Act_Local_GitWorkFlowTesting }}
-
-
