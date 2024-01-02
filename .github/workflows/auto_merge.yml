@@ -1,36 +1,13 @@
-name: Create and Merge Pull Request and Delete Branch
+name: Auto Merge
 
 on:
-  push:
+  pull_request:
     branches-ignore:
       - main
 
 jobs:
-  createPullRequest:
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-
-      - name: Check out code
-        uses: actions/checkout@v4
-
-      # Extract the name of the last commit in the branch
-      - name: Get Last Commit Name
-        id: last_commit
-        run: |
-          COMMIT_NAME=$(git log -1 --pretty=%B)
-          echo "commit_name=$COMMIT_NAME" >> $GITHUB_ENV
-
-      - name: create pull request
-        run: gh pr create -B main -H dev --title 'Merge branch_to_merge into base_branch' --body 'Created by Github action'
-        env:
-          GH_TOKEN: ${{ secrets.Act_Local_GitWorkFlowTesting }}
-
   autoMerge:
     if: github.event_name == 'pull_request' && github.event.action == 'opened'
-    needs: createPullRequest
     runs-on: ubuntu-latest
     steps:
       - name: Set up Node.js
@@ -46,12 +23,4 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.Act_Local_GitWorkFlowTesting }}
 
-  #deleteBranch:
-  # if:# github.event_name == 'pull_request' && github.event.pull_request.merged == true
-  #needs: autoMerge
-  #runs-on: ubuntu-latest
-  #steps:
-  #  - name: Delete Branch
-  #    run: git push origin --delete ${{ github.head_ref }#}
-  #    env:
-  #      GITHUB_TOKEN: ${{ secrets.THREE_JS_GITHUB_ACTION_PULL }#}
+
