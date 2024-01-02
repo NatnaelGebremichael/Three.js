@@ -8,18 +8,14 @@ on:
 jobs:
   autoMerge:
     if: github.event_name == 'pull_request' && github.event.action == 'opened'
+    needs: createPullRequest
     runs-on: ubuntu-latest
     steps:
       - name: Set up Node.js
         uses: actions/setup-node@v3
 
       - name: Auto Merge
-        run: |
-          gh auth setup-git
-          PR_NUMBER=$(gh pr view --json number --jq '.number')
-          COMMIT_TITLE="Merge pull request #$PR_NUMBER"
-          COMMIT_BODY="Detailed description of the merge"
-          gh pr merge $PR_NUMBER --auto --squash -t "$COMMIT_TITLE" -b "$COMMIT_BODY"
+        run: echo "event name is:" ${{ github.event_name }} 
         env:
           GH_TOKEN: ${{ secrets.Act_Local_GitWorkFlowTesting }}
 
