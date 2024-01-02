@@ -23,18 +23,23 @@ jobs:
           COMMIT_NAME=$(git log -1 --pretty=%B)
           echo "commit_name=$COMMIT_NAME" >> $GITHUB_ENV
 
-      - name: Create Pull Request Updated
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.Act_Local_GitWorkFlowTesting }} # Your PAT or you can use GITHUB_TOKEN
-          title: ${{ steps.last_commit.outputs.commit_name }}
-          body: "A new branch has been pushed and this pull request has been created automatically."
-          branch: "Dev" #${{ github.head_ref }#} # The branch to create for the pull request
-          base: "main" # The branch you want to merge your changes into
-          labels: "Automated PR" # You can add more labels separated by commas
-          # reviewers: "user1, user2" # Optional: Add if you want to specify reviewers
-          # team_reviewers: "team1, team2" # Optional: Add if you want to specify team reviewers
-          draft: false
+      - name: create pull request
+        run: gh pr create -B main -H dev --title 'Merge branch_to_merge into base_branch' --body 'Created by Github action'
+        env:
+          token: ${{ secrets.Act_Local_GitWorkFlowTesting }}
+
+      #- name: Create Pull Request Updated
+      #  uses: peter-evans/create-pull-request@v5
+      #  with:
+      #    token: ${{ secrets.Act_Local_GitWorkFlowTesting }#} # Your PAT or you can use GITHUB_TOKEN
+      #    title: ${{ steps.last_commit.outputs.commit_name }#}
+      #    body: "A new branch has been pushed and this pull request has been created automatically."
+      #    branch: "Dev" #${{ github.head_ref }#} # The branch to create for the pull request
+      #    base: "main" # The branch you want to merge your changes into
+      #    labels: "Automated PR" # You can add more labels separated by commas
+      #    # reviewers: "user1, user2" # Optional: Add if you want to specify reviewers
+      #    # team_reviewers: "team1, team2" # Optional: Add if you want to specify team reviewers
+      #    draft: false
 
   autoMerge:
     if: github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.action == 'reopened')
