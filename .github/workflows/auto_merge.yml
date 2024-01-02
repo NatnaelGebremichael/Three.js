@@ -26,7 +26,7 @@ jobs:
       - name: create pull request
         run: gh pr create -B main -H dev --title 'Merge branch_to_merge into base_branch' --body 'Created by Github action'
         env:
-          token: ${{ secrets.Act_Local_GitWorkFlowTesting }}
+          GH_TOKEN: ${{ secrets.Act_Local_GitWorkFlowTesting }}
 
       #- name: Create Pull Request Updated
       #  uses: peter-evans/create-pull-request@v5
