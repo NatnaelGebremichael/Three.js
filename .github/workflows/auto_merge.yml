@@ -24,7 +24,7 @@ jobs:
           echo "commit_name=$COMMIT_NAME" >> $GITHUB_ENV
 
       - name: create pull request
-        run: gh pr create -B main -H ${{ github.head_ref }} --title '$commit_name' --body 'A new branch has been pushed and this pull request has been created automatically.'
+        run: gh pr create -B main -H ${{ github.head_ref }} --title "${{ steps.last_commit.outputs.commit_name }}" --body 'A new branch has been pushed and this pull request has been created automatically.'
         env:
           GH_TOKEN: ${{ secrets.Act_Local_GitWorkFlowTesting }}
 
