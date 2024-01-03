@@ -20,12 +20,10 @@ jobs:
       - name: Get Last Commit Name
         id: last_commit
         run: |
-          COMMIT_NAME=$(git log -1 --pretty=%B)
-          echo "Last commit name: $COMMIT_NAME"
-          echo "::set-output name=commit_name::$COMMIT_NAME"
+          echo "COMMIT_NAME=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
 
       - name: create pull request
-        run: gh pr create -B main -H ${{ github.head_ref }} --title "${{ steps.last_commit.outputs.commit_name }}" --body 'A new branch has been pushed and this pull request has been created automatically.'
+        run: gh pr create -B main -H ${{ github.head_ref }} --title "$COMMIT_NAME" --body 'A new branch has been pushed and this pull request has been created automatically.'
         env:
           GH_TOKEN: ${{ secrets.Act_Local_GitWorkFlowTesting }}
 
