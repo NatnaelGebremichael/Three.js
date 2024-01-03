@@ -65,10 +65,10 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
+      # Replace 'your_branch_name' with the name of the branch you want to delete
+      # Assuming the branch is merged and you want to delete it from remote
       - name: Delete Branch
         run: |
-          # Replace 'your_branch_name' with the name of the branch you want to delete
-          # Assuming the branch is merged and you want to delete it from remote
           git push origin --delete ${{ github.head_ref }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
