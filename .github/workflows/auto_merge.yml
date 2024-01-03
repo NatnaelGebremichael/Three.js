@@ -18,9 +18,11 @@ jobs:
 
       # Extract the name of the last commit in the branch
       # Sed is used to handle special characters
+      # Sed is used to handle special characters
       - name: Get Last Commit Name
         id: last_commit
         run: |
+          COMMIT_NAME=$(git log -1 --pretty=%B | sed 's/[^a-zA-Z0-9 ]/_/g')
           COMMIT_NAME=$(git log -1 --pretty=%B | sed 's/[^a-zA-Z0-9 ]/_/g')
           echo "commit_name=$COMMIT_NAME" >> $GITHUB_ENV
 
@@ -48,6 +50,7 @@ jobs:
       - name: Get Last Commit Message
         run: |
           echo "LAST_COMMIT_MESSAGE=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
+
 
       - name: Auto Merge
         run: |
@@ -82,3 +85,4 @@ jobs:
           git push origin --delete $BRANCH_NAME
         env:
           GH_TOKEN: ${{ secrets.ThreeJsWorkflowPat }}
+
