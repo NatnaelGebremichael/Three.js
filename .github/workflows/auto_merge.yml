@@ -27,11 +27,10 @@ jobs:
           echo "BASE_BRANCH=main" >> $GITHUB_ENV
           HEAD_BRANCH=$(echo ${GITHUB_REF#refs/heads/})
           echo "HEAD_BRANCH=$HEAD_BRANCH" >> $GITHUB_ENV
-
       - name: create pull request
         run: gh pr create -B $BASE_BRANCH -H $HEAD_BRANCH --title "${{ env.commit_name }}" --body 'A new branch has been pushed and this pull request has been created automatically.'
         env:
-          GH_TOKEN: ${{ secrets.Act_Local_GitWorkFlowTesting }}
+          GH_TOKEN: ${{ secrets.ThreeJsWorkflowPat }}
 
   autoMerge:
     needs: createPullRequest
@@ -46,7 +45,6 @@ jobs:
       - name: Get Last Commit Message
         run: |
           echo "LAST_COMMIT_MESSAGE=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
-
       - name: Auto Merge
         run: |
           gh auth setup-git
@@ -54,9 +52,8 @@ jobs:
           COMMIT_TITLE="Merge pull request: $PR_NUMBER"
           COMMIT_BODY="$LAST_COMMIT_MESSAGE"
           gh pr merge $PR_NUMBER --auto --squash -t "$COMMIT_TITLE" -b "$COMMIT_BODY"
-
         env:
-          GH_TOKEN: ${{ secrets.Act_Local_GitWorkFlowTesting }}
+          GH_TOKEN: ${{ secrets.ThreeJsWorkflowPat }}
 
   deleteBranch:
     needs: autoMerge
@@ -65,10 +62,10 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
+      # Replace 'your_branch_name' with the name of the branch you want to delete
+      # Assuming the branch is merged and you want to delete it from remote
       - name: Delete Branch
         run: |
-          # Replace 'your_branch_name' with the name of the branch you want to delete
-          # Assuming the branch is merged and you want to delete it from remote
           git push origin --delete ${{ github.head_ref }}
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.ThreeJsWorkflowPat }}
