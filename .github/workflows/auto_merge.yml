@@ -18,9 +18,11 @@ jobs:
 
       # Extract the name of the last commit in the branch
       # Sed is used to handle special characters
+      # Sed is used to handle special characters
       - name: Get Last Commit Name
         id: last_commit
         run: |
+          COMMIT_NAME=$(git log -1 --pretty=%B | sed 's/[^a-zA-Z0-9 ]/_/g')
           COMMIT_NAME=$(git log -1 --pretty=%B | sed 's/[^a-zA-Z0-9 ]/_/g')
           echo "commit_name=$COMMIT_NAME" >> $GITHUB_ENV
 
@@ -49,6 +51,7 @@ jobs:
         run: |
           echo "LAST_COMMIT_MESSAGE=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
 
+
       - name: Auto Merge
         run: |
           gh auth setup-git
@@ -66,10 +69,11 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-      # Debugging step to check the value of github.head_ref
-      - name: Debug GitHub Head Ref
+      # Debugging step to check the branch name
+      - name: Debug Branch Name
         run: |
-          echo "github.head_ref: ${{ github.head_ref }}"
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          echo "Branch Name: $BRANCH_NAME"
         env:
           GH_TOKEN: ${{ secrets.ThreeJsWorkflowPat }}
 
@@ -77,6 +81,8 @@ jobs:
       # Assuming the branch is merged and you want to delete it from remote
       - name: Delete Branch
         run: |
-          git push origin --delete ${{ github.head_ref }}
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          git push origin --delete $BRANCH_NAME
         env:
           GH_TOKEN: ${{ secrets.ThreeJsWorkflowPat }}
+
