@@ -20,10 +20,16 @@ jobs:
       - name: Get Last Commit Name
         id: last_commit
         run: |
-          echo "COMMIT_NAME=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
+          COMMIT_NAME=$(git log -1 --pretty=%B)
+          echo "commit_name=$COMMIT_NAME" >> $GITHUB_ENV
+      # Set base branch as an environment variable and get the name of the head branch
+      - run: |
+          echo "BASE_BRANCH=main" >> $GITHUB_ENV
+          HEAD_BRANCH=$(echo ${GITHUB_REF#refs/heads/})
+          echo "HEAD_BRANCH=$HEAD_BRANCH" >> $GITHUB_ENV
 
       - name: create pull request
-        run: gh pr create -B main -H ${{ github.head_ref }} --title '$COMMIT_NAME' --body 'A new branch has been pushed and this pull request has been created automatically.'
+        run: gh pr create -B $BASE_BRANCH -H $HEAD_BRANCH --title "${{ env.commit_name }}" --body 'A new branch has been pushed and this pull request has been created automatically.'
         env:
           GH_TOKEN: ${{ secrets.Act_Local_GitWorkFlowTesting }}
 
