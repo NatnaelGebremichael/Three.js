@@ -21,7 +21,7 @@ jobs:
       - name: Get Last Commit Name
         id: last_commit
         run: |
-          COMMIT_NAME=$(git log -1 --pretty=%B) | sed 's/[^a-zA-Z0-9]/_/g')
+          COMMIT_NAME=$(git log -1 --pretty=%B | sed 's/[^a-zA-Z0-9 ]/_/g')
           echo "commit_name=$COMMIT_NAME" >> $GITHUB_ENV
 
       # Set base branch as an environment variable and get the name of the head branch
