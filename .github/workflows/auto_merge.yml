@@ -31,7 +31,7 @@ jobs:
       - name: create pull request
         run: gh pr create -B $BASE_BRANCH -H $HEAD_BRANCH --title "${{ env.commit_name }}" --body 'A new branch has been pushed and this pull request has been created automatically.'
         env:
-          GH_TOKEN: ${{ secrets.Act_Local_GitWorkFlowTesting }}
+          GH_TOKEN: ${{ secrets.THREE_JS_GITHUB_ACTION_PULL }}
 
   autoMerge:
     needs: createPullRequest
@@ -56,7 +56,7 @@ jobs:
           gh pr merge $PR_NUMBER --auto --squash -t "$COMMIT_TITLE" -b "$COMMIT_BODY"
 
         env:
-          GH_TOKEN: ${{ secrets.Act_Local_GitWorkFlowTesting }}
+          GH_TOKEN: ${{ secrets.THREE_JS_GITHUB_ACTION_PULL }}
 
   deleteBranch:
     needs: autoMerge
@@ -71,4 +71,4 @@ jobs:
         run: |
           git push origin --delete ${{ github.head_ref }}
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.THREE_JS_GITHUB_ACTION_PULL }}
