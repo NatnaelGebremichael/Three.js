@@ -21,7 +21,8 @@ jobs:
         id: last_commit
         run: |
           COMMIT_NAME=$(git log -1 --pretty=%B)
-          echo "commit_name=$COMMIT_NAME" >> $GITHUB_ENV
+          echo "Last commit name: $COMMIT_NAME"
+          echo "::set-output name=commit_name::$COMMIT_NAME"
 
       - name: create pull request
         run: gh pr create -B main -H ${{ github.head_ref }} --title "${{ steps.last_commit.outputs.commit_name }}" --body 'A new branch has been pushed and this pull request has been created automatically.'
