@@ -1,4 +1,4 @@
-name: Create and Merge Pull Request and Delete Branch
+name: Create PR, Merge, Delete
 
 on:
   push:
@@ -10,44 +10,65 @@ jobs:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+
+      - name: Check out code
+        uses: actions/checkout@v4
 
       # Extract the name of the last commit in the branch
       - name: Get Last Commit Name
         id: last_commit
         run: |
           COMMIT_NAME=$(git log -1 --pretty=%B)
-          echo "::set-output name=commit_name::$COMMIT_NAME"
+          echo "commit_name=$COMMIT_NAME" >> $GITHUB_ENV
+      # Set base branch as an environment variable and get the name of the head branch
+      - run: |
+          echo "BASE_BRANCH=main" >> $GITHUB_ENV
+          HEAD_BRANCH=$(echo ${GITHUB_REF#refs/heads/})
+          echo "HEAD_BRANCH=$HEAD_BRANCH" >> $GITHUB_ENV
 
-      - name: Create Pull Request
-        uses: repo-sync/pull-request@v2
-        with:
-          github_token: ${{ secrets.THREE_JS_GITHUB_ACTION_PULL }} # Use the PAT instead of GITHUB_TOKEN
-          pr_title: ${{ steps.last_commit.outputs.commit_name }}
-          pr_body: "A new branch has been pushed and this pull request has been created automatically."
-          source_branch: ${{ github.ref_name }} # Adjusted input
-          destination_branch: "main" # Adjusted input
+      - name: create pull request
+        run: gh pr create -B $BASE_BRANCH -H $HEAD_BRANCH --title "${{ env.commit_name }}" --body 'A new branch has been pushed and this pull request has been created automatically.'
+        env:
+          GH_TOKEN: ${{ secrets.Act_Local_GitWorkFlowTesting }}
 
   autoMerge:
-    if: github.event_name == 'pull_request' && github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.action == 'reopened'
     needs: createPullRequest
     runs-on: ubuntu-latest
     steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+
+      - name: Get Last Commit Message
+        run: |
+          echo "LAST_COMMIT_MESSAGE=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
+
       - name: Auto Merge
-        uses: pascalgn/automerge-action@v0.13.1
+        run: |
+          gh auth setup-git
+          PR_NUMBER=$(gh pr view --json number --jq '.number')
+          COMMIT_TITLE="Merge pull request: $PR_NUMBER"
+          COMMIT_BODY="$LAST_COMMIT_MESSAGE"
+          gh pr merge $PR_NUMBER --auto --squash -t "$COMMIT_TITLE" -b "$COMMIT_BODY"
+
         env:
-          GITHUB_TOKEN: ${{ secrets.THREE_JS_GITHUB_ACTION_PULL }}
-        with:
-          mergeMethod: squash
-          commitMessage: "Merge pull request #${{ github.event.pull_request.number }}"
-          #pullRequestLabels: "automerge"
+          GH_TOKEN: ${{ secrets.Act_Local_GitWorkFlowTesting }}
 
   deleteBranch:
-    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
     needs: autoMerge
     runs-on: ubuntu-latest
     steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
       - name: Delete Branch
-        run: git push origin --delete ${{ github.head_ref }}
+        run: |
+          # Replace 'your_branch_name' with the name of the branch you want to delete
+          # Assuming the branch is merged and you want to delete it from remote
+          git push origin --delete ${{ github.head_ref }}
         env:
-          GITHUB_TOKEN: ${{ secrets.THREE_JS_GITHUB_ACTION_PULL }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
