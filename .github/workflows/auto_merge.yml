@@ -66,10 +66,11 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-      # Debugging step to check the value of github.head_ref
-      - name: Debug GitHub Head Ref
+      # Debugging step to check the branch name
+      - name: Debug Branch Name
         run: |
-          echo "github.head_ref: ${{ github.head_ref }}"
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          echo "Branch Name: $BRANCH_NAME"
         env:
           GH_TOKEN: ${{ secrets.ThreeJsWorkflowPat }}
 
@@ -77,6 +78,7 @@ jobs:
       # Assuming the branch is merged and you want to delete it from remote
       - name: Delete Branch
         run: |
-          git push origin --delete ${{ github.head_ref }}
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          git push origin --delete $BRANCH_NAME
         env:
           GH_TOKEN: ${{ secrets.ThreeJsWorkflowPat }}
