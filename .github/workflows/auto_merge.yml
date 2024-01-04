@@ -1,3 +1,4 @@
+
 name: Create PR, Merge, Delete
 
 on:
@@ -17,19 +18,19 @@ jobs:
         uses: actions/checkout@v4
 
       # Extract the name of the last commit in the branch
-      # Sed is used to handle special characters 
+      # Sed is used to handle special characters
+      # Sed is used to handle special characters
       - name: Get Last Commit Name
         id: last_commit
         run: |
-          COMMIT_NAME=$(git log -1 --pretty=%B) 
+          COMMIT_NAME=$(git log -1 --pretty=%B | sed 's/[^a-zA-Z0-9 ]/_/g')
+          COMMIT_NAME=$(git log -1 --pretty=%B | sed 's/[^a-zA-Z0-9 ]/_/g')
           echo "commit_name=$COMMIT_NAME" >> $GITHUB_ENV
-
       # Set base branch as an environment variable and get the name of the head branch
       - run: |
           echo "BASE_BRANCH=main" >> $GITHUB_ENV
           HEAD_BRANCH=$(echo ${GITHUB_REF#refs/heads/})
           echo "HEAD_BRANCH=$HEAD_BRANCH" >> $GITHUB_ENV
-
       - name: create pull request
         run: gh pr create -B $BASE_BRANCH -H $HEAD_BRANCH --title "${{ env.commit_name }}" --body 'A new branch has been pushed and this pull request has been created automatically.'
         env:
@@ -65,10 +66,19 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
+      # Debugging step to check the branch name
+      - name: Debug Branch Name
+        run: |
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          echo "Branch Name: $BRANCH_NAME"
+        env:
+          GH_TOKEN: ${{ secrets.ThreeJsWorkflowPat }}
+
       # Replace 'your_branch_name' with the name of the branch you want to delete
       # Assuming the branch is merged and you want to delete it from remote
       - name: Delete Branch
         run: |
-          git push origin --delete ${{ github.head_ref }}
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          git push origin --delete $BRANCH_NAME
         env:
           GH_TOKEN: ${{ secrets.ThreeJsWorkflowPat }}
