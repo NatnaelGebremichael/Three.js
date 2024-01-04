@@ -49,6 +49,8 @@ jobs:
       - name: Get Last Commit Message
         run: |
           echo "LAST_COMMIT_MESSAGE=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
+
+
       - name: Auto Merge
         run: |
           gh auth setup-git
@@ -82,3 +84,4 @@ jobs:
           git push origin --delete $BRANCH_NAME
         env:
           GH_TOKEN: ${{ secrets.ThreeJsWorkflowPat }}
+
