@@ -71,7 +71,7 @@ jobs:
           BRANCH_NAME=${GITHUB_REF#refs/heads/}
           echo "Branch Name: $BRANCH_NAME"
         env:
-          GH_TOKEN: ${{ secrets.ThreeJsWorkflowPat }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
 
       # Replace 'your_branch_name' with the name of the branch you want to delete
       # Assuming the branch is merged and you want to delete it from remote
@@ -80,4 +80,4 @@ jobs:
           BRANCH_NAME=${GITHUB_REF#refs/heads/}
           git push origin --delete $BRANCH_NAME
         env:
-          GH_TOKEN: ${{ secrets.ThreeJsWorkflowPat }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
